@@ -1,14 +1,44 @@
 ## Howdy 👋
 
-![Recent languages](https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg&theme=dark&custom_title=My+most+recent+activity+%28last+7+days%29)
+<picture>
+  <source
+    srcset="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=dark"
+    media="(prefers-color-scheme: dark)"
+  />
+  <source
+    srcset="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=vue"
+    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+  />
+  <img src="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg" />
+</picture>
 
 Currently a 1st year grad student at TUDelft, studying Data Science and Artificial Intelligence.
 
-![Stats](https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&theme=dark&hide_rank=true)
+<picture>
+  <source
+    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&theme=dark"
+    media="(prefers-color-scheme: dark)"
+  />
+  <source
+    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&theme=vue"
+    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+  />
+  <img src="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true" />
+</picture>
 
 ## Languages
 
-![Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=20&layout=compact&theme=dark&card_width=400&hide_title=true)
+<picture>
+  <source
+    srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=20&layout=compact&card_width=400&theme=dark"
+    media="(prefers-color-scheme: dark)"
+  />
+  <source
+    srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=20&layout=compact&card_width=400&theme=vue"
+    media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
+  />
+  <img srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=20&layout=compact&card_width=400" />
+</picture>
 
 Other languages:
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/csharp/csharp-original.svg" title="C#" alt="C#" width="30" height="30"/></code>&nbsp;
