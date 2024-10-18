@@ -1,5 +1,7 @@
 ## Howdy 👋
 
+Currently a 1st-year grad student at TUDelft, studying Data Science and Artificial Intelligence.
+
 <picture>
   <source
     srcset="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=dark"
@@ -11,19 +13,16 @@
   />
   <img src="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg" />
 </picture>
-
-Currently a 1st year grad student at TUDelft, studying Data Science and Artificial Intelligence.
-
 <picture>
   <source
-    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&theme=dark"
+    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&custom_title=Github+Stats&theme=dark"
     media="(prefers-color-scheme: dark)"
   />
   <source
-    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&theme=vue"
+    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&custom_title=Github+Stats&theme=vue"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img src="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true" />
+  <img src="https://github-readme-stats.vercel.app/api?username=to5bg" />
 </picture>
 
 ## Languages
@@ -37,7 +36,7 @@ Currently a 1st year grad student at TUDelft, studying Data Science and Artifici
     srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=20&layout=compact&card_width=400&theme=vue"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=20&layout=compact&card_width=400" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg" />
 </picture>
 
 Other languages:
