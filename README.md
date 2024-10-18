@@ -2,6 +2,7 @@
 
 Currently a 1st-year grad student at TUDelft, studying Data Science and Artificial Intelligence.
 
+<a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
   <source
     srcset="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=dark"
@@ -13,6 +14,8 @@ Currently a 1st-year grad student at TUDelft, studying Data Science and Artifici
   />
   <img src="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg" />
 </picture>
+</a>
+<a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
   <source
     srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&custom_title=Github+Stats&theme=dark"
@@ -24,9 +27,11 @@ Currently a 1st-year grad student at TUDelft, studying Data Science and Artifici
   />
   <img src="https://github-readme-stats.vercel.app/api?username=to5bg" />
 </picture>
+</a>
 
 ## Languages
 
+<a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
   <source
     srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=20&layout=compact&card_width=400&theme=dark"
@@ -38,6 +43,7 @@ Currently a 1st-year grad student at TUDelft, studying Data Science and Artifici
   />
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg" />
 </picture>
+</a>
 
 Other languages:
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/csharp/csharp-original.svg" title="C#" alt="C#" width="30" height="30"/></code>&nbsp;
