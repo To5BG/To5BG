@@ -66,7 +66,7 @@ Extensive use:
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original.svg" title="PostreSQL" alt="PostreSQL" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/azuredevops/azuredevops-original.svg" title="Azure DevOps" alt="Azure DevOps" width="30" height="30"/></code>&nbsp;
 
-On occasion:
+Others:
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/solidjs/solidjs-original.svg" title="Solidjs" alt="Solidjs" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/nestjs/nestjs-original.svg" title="Nestjs" alt="Nestjs" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/graphql/graphql-plain.svg" title="GraphQL" alt="GraphQL" width="30" height="30"/></code>&nbsp;
@@ -74,6 +74,7 @@ On occasion:
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/opengl/opengl-original.svg" title="OpenGL" alt="OpenGL" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/selenium/selenium-original.svg" title="Selenium" alt="Selenium" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/dot-net/dot-net-plain.svg" title=".NET" alt=".NET" width="30" height="30"/></code>&nbsp;
+  <code><img src="https://github.com/devicons/devicon/blob/master/icons/apachespark/apachespark-original.svg" title="Spark" alt="Spark" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/hibernate/hibernate-original.svg" title="Hibernate" alt="Hibernate" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/mysql/mysql-original.svg" title="MySQL" alt="MySQL" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/gitlab/gitlab-original.svg" title="GitLab" alt="GitLab" width="30" height="30"/></code>&nbsp;
