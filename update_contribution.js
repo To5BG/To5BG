@@ -18,6 +18,14 @@ async function fetchPrivateRepos(graphqlWithAuth) {
           nodes {
             name
             isPrivate
+            pushedAt
+            defaultBranchRef {
+              target {
+                ... on Commit {
+                  committedDate
+                }
+              }
+            }
           }
         }
       }
@@ -26,6 +34,11 @@ async function fetchPrivateRepos(graphqlWithAuth) {
   const result = await graphqlWithAuth(query, { login: USERNAME });
   return result.user.repositories.nodes
     .filter(repo => repo.isPrivate)
+    .map(repo => ({
+      name: repo.name,
+      lastUpdate: repo.defaultBranchRef?.target?.committedDate || repo.pushedAt
+    }))
+    .sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate))
     .map(repo => repo.name);
 }
 
@@ -42,6 +55,17 @@ async function fetchOtherContributions(graphqlWithAuth) {
                 login
               }
               isPrivate
+              defaultBranchRef {
+                target {
+                  ... on Commit {
+                    history(author: {login: $login}, first: 1) {
+                      nodes {
+                        committedDate
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
           pullRequestContributionsByRepository(maxRepositories: 100) {
@@ -52,6 +76,17 @@ async function fetchOtherContributions(graphqlWithAuth) {
                 login
               }
               isPrivate
+              defaultBranchRef {
+                target {
+                  ... on Commit {
+                    history(author: {login: $login}, first: 1) {
+                      nodes {
+                        committedDate
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -66,10 +101,22 @@ async function fetchOtherContributions(graphqlWithAuth) {
   [...commitRepos, ...prRepos].forEach(({ repository }) => {
     if (!repository) return;
     if (repository.owner.login !== USERNAME) {
-      otherContribsMap.set(repository.nameWithOwner, repository.url);
+      const lastCommitDate = repository.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate;
+      otherContribsMap.set(repository.nameWithOwner, {
+        url: repository.url,
+        lastUpdate: lastCommitDate || new Date(0).toISOString() // fallback to oldest date if no commit found
+      });
     }
   });
-  return Array.from(otherContribsMap.entries());
+
+  return Array.from(otherContribsMap.entries())
+    .map(([name, data]) => ({
+      name,
+      url: data.url,
+      lastUpdate: data.lastUpdate
+    }))
+    .sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate))
+    .map(repo => [repo.name, repo.url]);
 }
 
 async function fetchContributedRepos() {
