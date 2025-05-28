@@ -18,24 +18,32 @@ async function fetchContributedRepos() {
   });
 
   const query = `
-  query($login: String!) {
-    user(login: $login) {
-      contributionsCollection {
-        commitContributionsByRepository(maxRepositories: 100) {
-          repository {
-            nameWithOwner
-            url
+    query($login: String!) {
+      user(login: $login) {
+        contributionsCollection {
+          commitContributionsByRepository(maxRepositories: 100) {
+            repository {
+              nameWithOwner
+              url
+              owner {
+                login
+              }
+              isPrivate
+            }
           }
-        }
-        pullRequestContributionsByRepository(maxRepositories: 100) {
-          repository {
-            nameWithOwner
-            url
+          pullRequestContributionsByRepository(maxRepositories: 100) {
+            repository {
+              nameWithOwner
+              url
+              owner {
+                login
+              }
+              isPrivate
+            }
           }
         }
       }
     }
-  }
   `;
 
   const result = await graphqlWithAuth(query, { login: USERNAME });
@@ -46,7 +54,9 @@ async function fetchContributedRepos() {
   // Combine and deduplicate
   const allReposMap = new Map();
   [...commitRepos, ...prRepos].forEach(({ repository }) => {
-    allReposMap.set(repository.nameWithOwner, repository.url);
+    if (!repository) return;
+    if (repository.owner.login !== USERNAME || repository.isPrivate)
+      allReposMap.set(repository.nameWithOwner, repository.url);
   });
 
   return Array.from(allReposMap.entries());
