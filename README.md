@@ -85,8 +85,12 @@ IDEs/Editors:
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/vscode/vscode-original.svg" title="VSCode" alt="VSCode" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/intellij/intellij-original.svg" title="IntelliJ" alt="IntelliJ" width="30" height="30"/></code>&nbsp;
 
+## Private Repositories
 
-## Repositories I Contributed To
+<!-- PRIVATE_REPOS_START -->
+<!-- PRIVATE_REPOS_END -->
 
-<!-- CONTRIBUTED_REPOS_START -->
-<!-- CONTRIBUTED_REPOS_END -->
+## Other Repositories I Contributed To
+
+<!-- OTHER_CONTRIBS_START -->
+<!-- OTHER_CONTRIBS_END -->

@@ -10,13 +10,26 @@ if (!GITHUB_TOKEN) {
   process.exit(1);
 }
 
-async function fetchContributedRepos() {
-  const graphqlWithAuth = graphql.defaults({
-    headers: {
-      authorization: `token ${GITHUB_TOKEN}`,
-    },
-  });
+async function fetchPrivateRepos(graphqlWithAuth) {
+  const query = `
+    query($login: String!) {
+      user(login: $login) {
+        repositories(first: 100, privacy: PRIVATE, ownerAffiliations: OWNER) {
+          nodes {
+            name
+            isPrivate
+          }
+        }
+      }
+    }
+  `;
+  const result = await graphqlWithAuth(query, { login: USERNAME });
+  return result.user.repositories.nodes
+    .filter(repo => repo.isPrivate)
+    .map(repo => repo.name);
+}
 
+async function fetchOtherContributions(graphqlWithAuth) {
   const query = `
     query($login: String!) {
       user(login: $login) {
@@ -45,61 +58,99 @@ async function fetchContributedRepos() {
       }
     }
   `;
-
   const result = await graphqlWithAuth(query, { login: USERNAME });
-
   const commitRepos = result.user.contributionsCollection.commitContributionsByRepository;
   const prRepos = result.user.contributionsCollection.pullRequestContributionsByRepository;
 
-  // Combine and deduplicate
-  const allReposMap = new Map();
+  const otherContribsMap = new Map();
   [...commitRepos, ...prRepos].forEach(({ repository }) => {
     if (!repository) return;
-    if (repository.owner.login !== USERNAME || repository.isPrivate)
-      allReposMap.set(repository.nameWithOwner, repository.url);
+    if (repository.owner.login !== USERNAME) {
+      otherContribsMap.set(repository.nameWithOwner, repository.url);
+    }
   });
-
-  return Array.from(allReposMap.entries());
+  return Array.from(otherContribsMap.entries());
 }
 
-function updateReadme(contributedRepos) {
-  const readmePath = path.join(process.cwd(), 'README.md');
-  let readmeContent = fs.readFileSync(readmePath, 'utf8');
+async function fetchContributedRepos() {
+  const graphqlWithAuth = graphql.defaults({
+    headers: {
+      authorization: `token ${GITHUB_TOKEN}`,
+    },
+  });
+  const [privateRepos, otherContribs] = await Promise.all([
+    fetchPrivateRepos(graphqlWithAuth),
+    fetchOtherContributions(graphqlWithAuth)
+  ]);
+  return { privateRepos, otherContribs };
+}
 
-  const startMarker = '<!-- CONTRIBUTED_REPOS_START -->';
-  const endMarker = '<!-- CONTRIBUTED_REPOS_END -->';
-
-  const listMd = contributedRepos
-    .map(([nameWithOwner, url]) => `- [${nameWithOwner}](${url})`)
+function updatePrivateReposSection(readmeContent, privateRepos) {
+  const startMarker = '<!-- PRIVATE_REPOS_START -->';
+  const endMarker = '<!-- PRIVATE_REPOS_END -->';
+  const listMd = privateRepos
+    .map(name => `- ${name}`)
     .join('\n');
-
   const replacement = `${startMarker}\n${listMd}\n${endMarker}`;
-
   const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'm');
 
   if (!regex.test(readmeContent)) {
-    console.error('Markers not found in README.md');
-    process.exit(1);
+    throw new Error('Private repos section markers not found in README.md');
   }
 
-  readmeContent = readmeContent.replace(regex, replacement);
+  return readmeContent.replace(regex, replacement);
+}
 
-  fs.writeFileSync(readmePath, readmeContent);
-  console.log('README.md updated with contributed repos');
+function updateOtherContribsSection(readmeContent, otherContribs) {
+  const startMarker = '<!-- OTHER_CONTRIBS_START -->';
+  const endMarker = '<!-- OTHER_CONTRIBS_END -->';
+  const listMd = otherContribs
+    .map(([nameWithOwner, url]) => `- [${nameWithOwner}](${url})`)
+    .join('\n');
+  const replacement = `${startMarker}\n${listMd}\n${endMarker}`;
+  const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'm');
+
+  if (!regex.test(readmeContent)) {
+    throw new Error('Other contributions section markers not found in README.md');
+  }
+
+  return readmeContent.replace(regex, replacement);
+}
+
+function updateReadme(repos) {
+  const readmePath = path.join(process.cwd(), 'README.md');
+  let readmeContent = fs.readFileSync(readmePath, 'utf8');
+
+  try {
+    readmeContent = updatePrivateReposSection(readmeContent, repos.privateRepos);
+    readmeContent = updateOtherContribsSection(readmeContent, repos.otherContribs);
+    fs.writeFileSync(readmePath, readmeContent);
+    console.log('README.md updated successfully');
+  } catch (error) {
+    console.error('Error updating README.md:', error.message);
+    process.exit(1);
+  }
 }
 
 async function main() {
-  const repos = await fetchContributedRepos();
+  try {
+    const repos = await fetchContributedRepos();
 
-  console.log(`Found ${repos.length} contributed repositories:`);
-  repos.forEach(([nameWithOwner, url]) => {
-    console.log(`- ${nameWithOwner}: ${url}`);
-  });
+    console.log(`Found ${repos.privateRepos.length} private repositories and ${repos.otherContribs.length} other contributions`);
+    console.log('\nPrivate repositories:');
+    repos.privateRepos.forEach(name => {
+      console.log(`- ${name}`);
+    });
+    console.log('\nOther contributions:');
+    repos.otherContribs.forEach(([nameWithOwner, url]) => {
+      console.log(`- ${nameWithOwner}: ${url}`);
+    });
 
-  updateReadme(repos);
+    updateReadme(repos);
+  } catch (error) {
+    console.error('Error:', error.message);
+    process.exit(1);
+  }
 }
 
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+main();
