@@ -1,62 +1,35 @@
-query FetchContributions(
-  $login: String!
-  $cursorCommits: String
-  $cursorPRs: String
-) {
+query FetchContributions($login: String!, $cursor: String, $commitCursor: String) {
   user(login: $login) {
-    contributionsCollection {
-      commitContributionsByRepository(
-        maxRepositories: 100
-        after: $cursorCommits
-      ) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        nodes {
-          repository {
-            nameWithOwner
-            url
-            owner {
-              login
-            }
-            isPrivate
-            defaultBranchRef {
-              target {
-                ... on Commit {
-                  history(author: { login: $login }, first: 1) {
-                    nodes {
-                      committedDate
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+    repositoriesContributedTo(
+      first: 100
+      after: $cursor
+      includeUserRepositories: false
+      contributionTypes: [COMMIT, PULL_REQUEST, ISSUE, REPOSITORY]
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
       }
-      pullRequestContributionsByRepository(
-        maxRepositories: 100
-        after: $cursorPRs
-      ) {
-        pageInfo {
-          hasNextPage
-          endCursor
+      nodes {
+        nameWithOwner
+        url
+        owner {
+          login
         }
-        nodes {
-          repository {
-            nameWithOwner
-            url
-            owner {
-              login
-            }
-            isPrivate
-            defaultBranchRef {
-              target {
-                ... on Commit {
-                  history(author: { login: $login }, first: 1) {
-                    nodes {
-                      committedDate
+        isPrivate
+        defaultBranchRef {
+          target {
+            ... on Commit {
+              history(first: 100, after: $commitCursor) {
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+                nodes {
+                  committedDate
+                  author {
+                    user {
+                      login
                     }
                   }
                 }

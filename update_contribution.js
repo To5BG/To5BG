@@ -21,10 +21,12 @@ async function fetchAllPrivateRepos(graphqlWithAuth) {
   while (hasNextPage) {
     const result = await graphqlWithAuth(privateReposQuery, { login: USERNAME, cursor });
     const { nodes, pageInfo } = result.user.repositories;
+
     allRepos.push(...nodes);
     hasNextPage = pageInfo.hasNextPage;
     cursor = pageInfo.endCursor;
   }
+
   return allRepos
     .filter(repo => repo.isPrivate)
     .map(repo => ({
@@ -35,61 +37,87 @@ async function fetchAllPrivateRepos(graphqlWithAuth) {
     .map(repo => repo.name);
 }
 
-async function fetchAllContributions(graphqlWithAuth) {
-  const allContribs = new Map();
-  let hasNextPageCommits = true;
-  let hasNextPagePRs = true;
-  let cursorCommits = null;
-  let cursorPRs = null;
+async function fetchCommitHistory(graphqlWithAuth, repository) {
+  let commitCursor = null;
+  let hasMoreCommits = true;
 
-  while (hasNextPageCommits || hasNextPagePRs) {
+  while (hasMoreCommits) {
     const result = await graphqlWithAuth(contributionsQuery, {
       login: USERNAME,
-      cursorCommits,
-      cursorPRs
+      cursor: null,  // We're only querying one repo
+      commitCursor
     });
-    const commitData = result.user.contributionsCollection.commitContributionsByRepository;
-    const prData = result.user.contributionsCollection.pullRequestContributionsByRepository;
-    // Process commit contributions
-    if (hasNextPageCommits) {
-      commitData.nodes.forEach(({ repository }) => {
-        if (!repository || repository.owner.login === USERNAME) return;
-        const lastCommitDate = repository.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate;
-        if (!allContribs.has(repository.nameWithOwner) ||
-          (lastCommitDate && new Date(lastCommitDate) > new Date(allContribs.get(repository.nameWithOwner).lastUpdate))) {
-          allContribs.set(repository.nameWithOwner, {
-            url: repository.url,
-            lastUpdate: lastCommitDate || new Date(0).toISOString()
-          });
-        }
-      });
-      hasNextPageCommits = commitData.pageInfo.hasNextPage;
-      cursorCommits = commitData.pageInfo.endCursor;
+
+    const history = result.user.repositoriesContributedTo.nodes[0]?.defaultBranchRef?.target?.history;
+    if (!history) return null;
+
+    const commits = history.nodes || [];
+    const lastCommit = commits.find(commit => commit?.author?.user?.login === USERNAME);
+
+    if (lastCommit) {
+      return lastCommit.committedDate;
     }
-    // Process PR contributions
-    if (hasNextPagePRs) {
-      prData.nodes.forEach(({ repository }) => {
-        if (!repository || repository.owner.login === USERNAME) return;
-        const lastCommitDate = repository.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate;
-        if (!allContribs.has(repository.nameWithOwner) ||
-          (lastCommitDate && new Date(lastCommitDate) > new Date(allContribs.get(repository.nameWithOwner).lastUpdate))) {
-          allContribs.set(repository.nameWithOwner, {
-            url: repository.url,
-            lastUpdate: lastCommitDate || new Date(0).toISOString()
-          });
-        }
-      });
-      hasNextPagePRs = prData.pageInfo.hasNextPage;
-      cursorPRs = prData.pageInfo.endCursor;
+
+    hasMoreCommits = history.pageInfo.hasNextPage;
+    commitCursor = history.pageInfo.endCursor;
+
+    if (hasMoreCommits) {
+      process.stdout.write(','); // Show progress for commit pagination
     }
   }
+
+  return null; // No commit found after checking entire history
+}
+
+async function fetchAllContributions(graphqlWithAuth) {
+  const allContribs = new Map();
+  let hasNextPage = true;
+  let cursor = null;
+
+  console.log('Fetching contributed repositories...');
+  while (hasNextPage) {
+    const result = await graphqlWithAuth(contributionsQuery, {
+      login: USERNAME,
+      cursor,
+      commitCursor: null
+    });
+    const { nodes, pageInfo } = result.user.repositoriesContributedTo;
+
+    // Process contributions
+    for (const repository of nodes) {
+      if (!repository || repository.owner.login === USERNAME) continue;
+
+      process.stdout.write(`\nChecking ${repository.nameWithOwner}`);
+
+      const lastCommitDate = await fetchCommitHistory(graphqlWithAuth, repository);
+
+      if (lastCommitDate) {
+        allContribs.set(repository.nameWithOwner, {
+          url: repository.url,
+          lastCommitDate: lastCommitDate
+        });
+        process.stdout.write(' ✓');
+      } else {
+        process.stdout.write(' (no commits found)');
+      }
+    }
+
+    hasNextPage = pageInfo.hasNextPage;
+    cursor = pageInfo.endCursor;
+
+    if (hasNextPage) {
+      process.stdout.write('\nFetching more repositories...');
+    }
+  }
+  console.log('\nDone fetching contributions!');
+
   return Array.from(allContribs.entries())
     .map(([name, data]) => ({
       name,
       url: data.url,
-      lastUpdate: data.lastUpdate
+      lastCommitDate: data.lastCommitDate
     }))
-    .sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate))
+    .sort((a, b) => new Date(b.lastCommitDate) - new Date(a.lastCommitDate))
     .map(repo => [repo.name, repo.url]);
 }
 
@@ -99,10 +127,12 @@ async function fetchContributedRepos() {
       authorization: `token ${GITHUB_TOKEN}`,
     },
   });
+
   const [privateRepos, otherContribs] = await Promise.all([
     fetchAllPrivateRepos(graphqlWithAuth),
     fetchAllContributions(graphqlWithAuth)
   ]);
+
   return { privateRepos, otherContribs };
 }
 
@@ -158,10 +188,12 @@ async function main() {
     const repos = await fetchContributedRepos();
 
     console.log(`Found ${repos.privateRepos.length} private repositories and ${repos.otherContribs.length} other contributions`);
+
     console.log('\nPrivate repositories:');
     repos.privateRepos.forEach(name => {
       console.log(`- ${name}`);
     });
+
     console.log('\nOther contributions:');
     repos.otherContribs.forEach(([nameWithOwner, url]) => {
       console.log(`- ${nameWithOwner}: ${url}`);
