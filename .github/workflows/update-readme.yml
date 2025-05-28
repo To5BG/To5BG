@@ -1,0 +1,39 @@
+name: Update Contributed Repos List
+
+on:
+  schedule:
+    - cron: "0 0 * * 0" # every Sunday midnight UTC
+  workflow_dispatch: # manual trigger
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Update README with contributed repos
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: node update_contribution.js
+
+      - name: Commit & push changes if any
+        run: |
+          git config user.name "AlpiGun5"
+          git config user.email "a.i.guncan02@gmail.com"
+          if [[ `git status --porcelain` ]]; then
+            git add README.md
+            git commit -m "[$(date +'%Y-%m-%d')]: Update contributions list [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi
