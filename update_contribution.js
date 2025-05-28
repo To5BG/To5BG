@@ -80,6 +80,12 @@ function updateReadme(contributedRepos) {
 
 async function main() {
   const repos = await fetchContributedRepos();
+
+  console.log(`Found ${repos.length} contributed repositories:`);
+  repos.forEach(([nameWithOwner, url]) => {
+    console.log(`- ${nameWithOwner}: ${url}`);
+  });
+
   updateReadme(repos);
 }
 
