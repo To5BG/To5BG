@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { request } = require('@octokit/graphql');
+const { graphql } = require('@octokit/graphql');
 
 const GITHUB_TOKEN = process.env.GH_PAT;
 const USERNAME = 'To5BG';
@@ -11,7 +11,7 @@ if (!GITHUB_TOKEN) {
 }
 
 async function fetchContributedRepos() {
-  const graphqlWithAuth = request.defaults({
+  const graphqlWithAuth = graphql.defaults({
     headers: {
       authorization: `token ${GITHUB_TOKEN}`,
     },
