@@ -1,0 +1,70 @@
+query FetchContributions(
+  $login: String!
+  $cursorCommits: String
+  $cursorPRs: String
+) {
+  user(login: $login) {
+    contributionsCollection {
+      commitContributionsByRepository(
+        maxRepositories: 100
+        after: $cursorCommits
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          repository {
+            nameWithOwner
+            url
+            owner {
+              login
+            }
+            isPrivate
+            defaultBranchRef {
+              target {
+                ... on Commit {
+                  history(author: { login: $login }, first: 1) {
+                    nodes {
+                      committedDate
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      pullRequestContributionsByRepository(
+        maxRepositories: 100
+        after: $cursorPRs
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          repository {
+            nameWithOwner
+            url
+            owner {
+              login
+            }
+            isPrivate
+            defaultBranchRef {
+              target {
+                ... on Commit {
+                  history(author: { login: $login }, first: 1) {
+                    nodes {
+                      committedDate
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

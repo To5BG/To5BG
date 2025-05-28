@@ -1,7 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const { graphql } = require('@octokit/graphql');
+import { readFileSync, writeFileSync } from 'fs';
+import { join } from 'path';
+import { graphql } from '@octokit/graphql';
+import { privateReposQuery, contributionsQuery } from './queries/index.js';
+import { fileURLToPath } from 'url';
 
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const GITHUB_TOKEN = process.env.GH_PAT;
 const USERNAME = 'To5BG';
 
@@ -10,29 +13,19 @@ if (!GITHUB_TOKEN) {
   process.exit(1);
 }
 
-async function fetchPrivateRepos(graphqlWithAuth) {
-  const query = `
-    query($login: String!) {
-      user(login: $login) {
-        repositories(first: 100, privacy: PRIVATE, ownerAffiliations: OWNER) {
-          nodes {
-            name
-            isPrivate
-            pushedAt
-            defaultBranchRef {
-              target {
-                ... on Commit {
-                  committedDate
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-  const result = await graphqlWithAuth(query, { login: USERNAME });
-  return result.user.repositories.nodes
+async function fetchAllPrivateRepos(graphqlWithAuth) {
+  const allRepos = [];
+  let hasNextPage = true;
+  let cursor = null;
+
+  while (hasNextPage) {
+    const result = await graphqlWithAuth(privateReposQuery, { login: USERNAME, cursor });
+    const { nodes, pageInfo } = result.user.repositories;
+    allRepos.push(...nodes);
+    hasNextPage = pageInfo.hasNextPage;
+    cursor = pageInfo.endCursor;
+  }
+  return allRepos
     .filter(repo => repo.isPrivate)
     .map(repo => ({
       name: repo.name,
@@ -42,74 +35,55 @@ async function fetchPrivateRepos(graphqlWithAuth) {
     .map(repo => repo.name);
 }
 
-async function fetchOtherContributions(graphqlWithAuth) {
-  const query = `
-    query($login: String!) {
-      user(login: $login) {
-        contributionsCollection {
-          commitContributionsByRepository(maxRepositories: 100) {
-            repository {
-              nameWithOwner
-              url
-              owner {
-                login
-              }
-              isPrivate
-              defaultBranchRef {
-                target {
-                  ... on Commit {
-                    history(author: {login: $login}, first: 1) {
-                      nodes {
-                        committedDate
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-          pullRequestContributionsByRepository(maxRepositories: 100) {
-            repository {
-              nameWithOwner
-              url
-              owner {
-                login
-              }
-              isPrivate
-              defaultBranchRef {
-                target {
-                  ... on Commit {
-                    history(author: {login: $login}, first: 1) {
-                      nodes {
-                        committedDate
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+async function fetchAllContributions(graphqlWithAuth) {
+  const allContribs = new Map();
+  let hasNextPageCommits = true;
+  let hasNextPagePRs = true;
+  let cursorCommits = null;
+  let cursorPRs = null;
+
+  while (hasNextPageCommits || hasNextPagePRs) {
+    const result = await graphqlWithAuth(contributionsQuery, {
+      login: USERNAME,
+      cursorCommits,
+      cursorPRs
+    });
+    const commitData = result.user.contributionsCollection.commitContributionsByRepository;
+    const prData = result.user.contributionsCollection.pullRequestContributionsByRepository;
+    // Process commit contributions
+    if (hasNextPageCommits) {
+      commitData.nodes.forEach(({ repository }) => {
+        if (!repository || repository.owner.login === USERNAME) return;
+        const lastCommitDate = repository.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate;
+        if (!allContribs.has(repository.nameWithOwner) ||
+          (lastCommitDate && new Date(lastCommitDate) > new Date(allContribs.get(repository.nameWithOwner).lastUpdate))) {
+          allContribs.set(repository.nameWithOwner, {
+            url: repository.url,
+            lastUpdate: lastCommitDate || new Date(0).toISOString()
+          });
         }
-      }
-    }
-  `;
-  const result = await graphqlWithAuth(query, { login: USERNAME });
-  const commitRepos = result.user.contributionsCollection.commitContributionsByRepository;
-  const prRepos = result.user.contributionsCollection.pullRequestContributionsByRepository;
-
-  const otherContribsMap = new Map();
-  [...commitRepos, ...prRepos].forEach(({ repository }) => {
-    if (!repository) return;
-    if (repository.owner.login !== USERNAME) {
-      const lastCommitDate = repository.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate;
-      otherContribsMap.set(repository.nameWithOwner, {
-        url: repository.url,
-        lastUpdate: lastCommitDate || new Date(0).toISOString() // fallback to oldest date if no commit found
       });
+      hasNextPageCommits = commitData.pageInfo.hasNextPage;
+      cursorCommits = commitData.pageInfo.endCursor;
     }
-  });
-
-  return Array.from(otherContribsMap.entries())
+    // Process PR contributions
+    if (hasNextPagePRs) {
+      prData.nodes.forEach(({ repository }) => {
+        if (!repository || repository.owner.login === USERNAME) return;
+        const lastCommitDate = repository.defaultBranchRef?.target?.history?.nodes?.[0]?.committedDate;
+        if (!allContribs.has(repository.nameWithOwner) ||
+          (lastCommitDate && new Date(lastCommitDate) > new Date(allContribs.get(repository.nameWithOwner).lastUpdate))) {
+          allContribs.set(repository.nameWithOwner, {
+            url: repository.url,
+            lastUpdate: lastCommitDate || new Date(0).toISOString()
+          });
+        }
+      });
+      hasNextPagePRs = prData.pageInfo.hasNextPage;
+      cursorPRs = prData.pageInfo.endCursor;
+    }
+  }
+  return Array.from(allContribs.entries())
     .map(([name, data]) => ({
       name,
       url: data.url,
@@ -126,8 +100,8 @@ async function fetchContributedRepos() {
     },
   });
   const [privateRepos, otherContribs] = await Promise.all([
-    fetchPrivateRepos(graphqlWithAuth),
-    fetchOtherContributions(graphqlWithAuth)
+    fetchAllPrivateRepos(graphqlWithAuth),
+    fetchAllContributions(graphqlWithAuth)
   ]);
   return { privateRepos, otherContribs };
 }
@@ -165,13 +139,13 @@ function updateOtherContribsSection(readmeContent, otherContribs) {
 }
 
 function updateReadme(repos) {
-  const readmePath = path.join(process.cwd(), 'README.md');
-  let readmeContent = fs.readFileSync(readmePath, 'utf8');
+  const readmePath = join(__dirname, 'README.md');
+  let readmeContent = readFileSync(readmePath, 'utf8');
 
   try {
     readmeContent = updatePrivateReposSection(readmeContent, repos.privateRepos);
     readmeContent = updateOtherContribsSection(readmeContent, repos.otherContribs);
-    fs.writeFileSync(readmePath, readmeContent);
+    writeFileSync(readmePath, readmeContent);
     console.log('README.md updated successfully');
   } catch (error) {
     console.error('Error updating README.md:', error.message);
