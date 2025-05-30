@@ -1,0 +1,89 @@
+query RecentContributions(
+  $repoOwner: String!
+  $repoName: String!
+  $commitCursor: String
+  $prCursor: String
+  $issueCursor: String
+) {
+  repository(owner: $repoOwner, name: $repoName) {
+    defaultBranchRef {
+      target {
+        ... on Commit {
+          history(first: 100, after: $commitCursor) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            edges {
+              node {
+                commitUrl
+                committedDate
+                author {
+                  user {
+                    login
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    pullRequests(
+      first: 50
+      after: $prCursor
+      orderBy: { field: CREATED_AT, direction: DESC }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        createdAt
+        author {
+          login
+        }
+        comments(last: 10) {
+          nodes {
+            author {
+              login
+            }
+            createdAt
+          }
+        }
+        reviews(last: 10) {
+          nodes {
+            author {
+              login
+            }
+            submittedAt
+          }
+        }
+      }
+    }
+    issues(
+      first: 50
+      after: $issueCursor
+      orderBy: { field: CREATED_AT, direction: DESC }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        createdAt
+        author {
+          login
+        }
+        comments(last: 10) {
+          nodes {
+            author {
+              login
+            }
+            createdAt
+          }
+        }
+      }
+    }
+  }
+}

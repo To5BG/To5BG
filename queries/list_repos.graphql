@@ -1,0 +1,29 @@
+query AllContributions($login: String!, $from: DateTime!, $to: DateTime!) {
+  user(login: $login) {
+    contributionsCollection(from: $from, to: $to) {
+      startedAt
+      endedAt
+      totalCommitContributions
+      totalRepositoriesWithContributedCommits
+      commitContributionsByRepository(maxRepositories: 100) {
+        repository {
+          nameWithOwner
+          owner {
+            ... on Organization {
+              login
+            }
+            ... on User {
+              login
+            }
+          }
+          url
+          isPrivate
+        }
+        contributions(first: 100) {
+          totalCount
+        }
+      }
+      hasActivityInThePast
+    }
+  }
+}

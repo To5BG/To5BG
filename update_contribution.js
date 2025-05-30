@@ -1,209 +1,223 @@
 import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
 import { graphql } from '@octokit/graphql';
-import { privateReposQuery, contributionsQuery } from './queries/index.js';
 import { fileURLToPath } from 'url';
+import { join } from 'path';
+import { listReposQuery, repoDetailsQuery } from './queries/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
+
 const GITHUB_TOKEN = process.env.GH_PAT;
 const USERNAME = 'To5BG';
 
 if (!GITHUB_TOKEN) {
-  console.error('Missing GH_PAT environment variable');
-  process.exit(1);
+    console.error('Missing GitHub token');
+    process.exit(1);
 }
 
-async function fetchAllPrivateRepos(graphqlWithAuth) {
-  const allRepos = [];
-  let hasNextPage = true;
-  let cursor = null;
+const graphqlWithAuth = async (...args) => {
+    await new Promise(resolve => setTimeout(resolve, 500)); // Rate limiting
+    return graphql.defaults({
+        headers: {
+            authorization: `token ${GITHUB_TOKEN}`,
+        },
+    })(...args);
+};
 
-  while (hasNextPage) {
-    const result = await graphqlWithAuth(privateReposQuery, { login: USERNAME, cursor });
-    const { nodes, pageInfo } = result.user.repositories;
+async function getAllRepositories() {
+    const privateOwnedRepos = new Map();
+    const publicOwnedRepos = new Map();
+    const otherContributedRepos = new Map();
+    let rangesProcessed = 0;
 
-    allRepos.push(...nodes);
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
-  }
+    let to = new Date();
+    let from = new Date(0);
+    from.setUTCMilliseconds(to - 15780000000);
 
-  return allRepos
-    .filter(repo => repo.isPrivate)
-    .map(repo => ({
-      name: repo.name,
-      lastUpdate: repo.defaultBranchRef?.target?.committedDate || repo.pushedAt
-    }))
-    .sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate))
-    .map(repo => repo.name);
-}
+    console.log('Fetching repositories...');
 
-async function fetchCommitHistory(graphqlWithAuth, repository) {
-  let commitCursor = null;
-  let hasMoreCommits = true;
+    while (true) {
+        const fromISO = from.toISOString();
+        const toISO = to.toISOString();
 
-  while (hasMoreCommits) {
-    const result = await graphqlWithAuth(contributionsQuery, {
-      login: USERNAME,
-      cursor: null,  // We're only querying one repo
-      commitCursor
-    });
-
-    const history = result.user.repositoriesContributedTo.nodes[0]?.defaultBranchRef?.target?.history;
-    if (!history) return null;
-
-    const commits = history.nodes || [];
-    const lastCommit = commits.find(commit => commit?.author?.user?.login === USERNAME);
-
-    if (lastCommit) {
-      return lastCommit.committedDate;
-    }
-
-    hasMoreCommits = history.pageInfo.hasNextPage;
-    commitCursor = history.pageInfo.endCursor;
-
-    if (hasMoreCommits) {
-      process.stdout.write(','); // Show progress for commit pagination
-    }
-  }
-
-  return null; // No commit found after checking entire history
-}
-
-async function fetchAllContributions(graphqlWithAuth) {
-  const allContribs = new Map();
-  let hasNextPage = true;
-  let cursor = null;
-
-  console.log('Fetching contributed repositories...');
-  while (hasNextPage) {
-    const result = await graphqlWithAuth(contributionsQuery, {
-      login: USERNAME,
-      cursor,
-      commitCursor: null
-    });
-    const { nodes, pageInfo } = result.user.repositoriesContributedTo;
-
-    // Process contributions
-    for (const repository of nodes) {
-      if (!repository || repository.owner.login === USERNAME) continue;
-
-      process.stdout.write(`\nChecking ${repository.nameWithOwner}`);
-
-      const lastCommitDate = await fetchCommitHistory(graphqlWithAuth, repository);
-
-      if (lastCommitDate) {
-        allContribs.set(repository.nameWithOwner, {
-          url: repository.url,
-          lastCommitDate: lastCommitDate
+        const result = await graphqlWithAuth(listReposQuery, {
+            login: USERNAME,
+            from: fromISO,
+            to: toISO,
         });
-        process.stdout.write(' ✓');
-      } else {
-        process.stdout.write(' (no commits found)');
-      }
+
+        writeFileSync('output/response_repos.json', JSON.stringify(result, null, 2), 'utf-8');
+
+        const coll = result.user.contributionsCollection;
+        coll.commitContributionsByRepository.forEach(i => {
+            const repo = i.repository;
+            const map =
+                (repo.owner.login == USERNAME && repo.isPrivate) ? privateOwnedRepos :
+                    (repo.owner.login == USERNAME) ? publicOwnedRepos : otherContributedRepos;
+
+            const [prevCount = 0, repoUrl = repo.url] = map.get(repo.nameWithOwner) || [];
+            map.set(repo.nameWithOwner, [prevCount + i.contributions.totalCount, repoUrl]);
+        });
+
+        if (!coll.hasActivityInThePast) break;
+        to = new Date(from);
+        from = new Date(0);
+        from.setUTCMilliseconds(to - 15780000000);
+
+        rangesProcessed++;
+        process.stdout.write(`\rProcessed ${rangesProcessed} time ranges of repositories...`);
+        process.stdout.write(from.toISOString());
+        break;
     }
 
-    hasNextPage = pageInfo.hasNextPage;
-    cursor = pageInfo.endCursor;
+    console.log(`\nFound ${privateOwnedRepos.size} private owned repositories`);
+    console.log(`Found ${otherContributedRepos.size} contributed repositories`);
 
-    if (hasNextPage) {
-      process.stdout.write('\nFetching more repositories...');
+    return {
+        owned: Array.from(privateOwnedRepos.values()),
+        contributed: Array.from(otherContributedRepos.values())
+    };
+}
+
+async function getLastContributionDate(repoOwner, repoName) {
+    const dates = [];
+
+    let commitCursor = null;
+    let prCursor = null;
+    let issueCursor = null;
+
+    let hasNextCommit = true;
+    let hasNextPr = true;
+    let hasNextIssue = true;
+
+    try {
+        while (hasNextCommit || hasNextPr || hasNextIssue) {
+            const result = await graphqlWithAuth(repoDetailsQuery, {
+                repoOwner,
+                repoName,
+                commitCursor,
+                prCursor,
+                issueCursor
+            });
+
+            writeFileSync(`output/response_repo_${repoOwner.toLowerCase()}_${repoName.toLowerCase()}.json`,
+                JSON.stringify(result, null, 2), 'utf-8');
+
+            const history = result.repository.defaultBranchRef?.target?.history;
+            if (!history) break;
+
+            history.edges.forEach(o => {
+                if (o.node.author?.user?.login === USERNAME)
+                    dates.push(new Date(o.node.committedDate));
+            });
+
+            result.repository.issues.nodes.forEach(node => {
+                if (node.author?.login === USERNAME)
+                    dates.push(new Date(issue.createdAt));
+
+                node.comments.nodes.forEach(comment => {
+                    if (comment.author?.login === USERNAME)
+                        dates.push(new Date(comment.createdAt));
+                });
+            });
+
+            result.repository.pullRequests.nodes.forEach(pr => {
+                if (pr.author?.login === USERNAME)
+                    dates.push(new Date(pr.createdAt));
+
+                pr.comments.nodes.forEach(comment => {
+                    if (comment.author?.login === USERNAME)
+                        dates.push(new Date(comment.createdAt));
+                });
+                pr.reviews.nodes.forEach(review => {
+                    if (review.author?.login === USERNAME && review.submittedAt)
+                        dates.push(new Date(review.submittedAt));
+                });
+            });
+
+            hasNextCommit = history.pageInfo.hasNextPage;
+            hasNextIssue = result.repository.issues.pageInfo.hasNextPage;
+            hasNextPr = result.repository.pullRequests.pageInfo.hasNextPage;
+
+            commitCursor = history.pageInfo.endCursor;
+            issueCursor = result.repository.issues.pageInfo.endCursor;
+            prCursor = result.repository.pullRequests.pageInfo.endCursor;
+
+            process.stdout.write('.');
+            if (dates.length > 0) return new Date(Math.max(...dates));
+        }
+        return null;
+    } catch (error) {
+        console.error(`\nError processing ${repoOwner}/${repoName}:`, error.message);
+        return null;
     }
-  }
-  console.log('\nDone fetching contributions!');
-
-  return Array.from(allContribs.entries())
-    .map(([name, data]) => ({
-      name,
-      url: data.url,
-      lastCommitDate: data.lastCommitDate
-    }))
-    .sort((a, b) => new Date(b.lastCommitDate) - new Date(a.lastCommitDate))
-    .map(repo => [repo.name, repo.url]);
 }
 
-async function fetchContributedRepos() {
-  const graphqlWithAuth = graphql.defaults({
-    headers: {
-      authorization: `token ${GITHUB_TOKEN}`,
-    },
-  });
+async function processRepositories() {
+    try {
+        const { owned, contributed } = await getAllRepositories();
+        writeFileSync('output/owned.json', JSON.stringify(owned, null, 2), 'utf-8');
+        writeFileSync('output/contributed.json', JSON.stringify(contributed, null, 2), 'utf-8');
 
-  const [privateRepos, otherContribs] = await Promise.all([
-    fetchAllPrivateRepos(graphqlWithAuth),
-    fetchAllContributions(graphqlWithAuth)
-  ]);
+        console.log('\nProcessing private owned repositories...');
+        const ownedWithDates = await Promise.all(
+            owned.map(async (repo, index) => {
+                process.stdout.write(`\rProcessing ${index + 1}/${owned.length}...`);
+                const [, , , owner, name] = repo[1].split("/");
+                const lastContributionDate = await getLastContributionDate(owner, name);
+                return {
+                    nameWithOwner: `${owner}/${name}`, count: repo[0], url: repo[1],
+                    lastContributionDate
+                };
+            })
+        );
 
-  return { privateRepos, otherContribs };
+        console.log('\n\nProcessing contributed repositories...');
+        const contributedWithDates = await Promise.all(
+            contributed.map(async (repo, index) => {
+                process.stdout.write(`\rProcessing ${index + 1}/${contributed.length}...`);
+                const [, , , owner, name] = repo[1].split("/");
+                const lastContributionDate = await getLastContributionDate(owner, name);
+                return {
+                    nameWithOwner: `${owner}/${name}`, count: repo[0], url: repo[1],
+                    lastContributionDate
+                };
+            })
+        );
+
+        // Update README
+        const readmePath = join(__dirname, 'README.md');
+        let readme = readFileSync(readmePath, 'utf8');
+
+        const privateSection = ownedWithDates
+            .sort((a, b) => b.lastContributionDate - a.lastContributionDate)
+            .map(repo => `- [${repo.count}]${repo.nameWithOwner}`)
+            .join('\n');
+        readme = readme.replace(
+            /<!-- PRIVATE_REPOS_START -->[\s\S]*?<!-- PRIVATE_REPOS_END -->/,
+            `<!-- PRIVATE_REPOS_START -->\n${privateSection}\n<!-- PRIVATE_REPOS_END -->`
+        );
+
+        const contributedSection = contributedWithDates
+            .sort((a, b) => b.lastContributionDate - a.lastContributionDate)
+            .map(repo => `- [${repo.count}][${repo.nameWithOwner}](${repo.url})`)
+            .join('\n');
+        readme = readme.replace(
+            /<!-- OTHER_CONTRIBS_START -->[\s\S]*?<!-- OTHER_CONTRIBS_END -->/,
+            `<!-- OTHER_CONTRIBS_START -->\n${contributedSection}\n<!-- OTHER_CONTRIBS_END -->`
+        );
+
+        writeFileSync(readmePath, readme);
+
+        console.log('\n\nResults:');
+        console.log(`Private repos updated: ${owned.length}`);
+        console.log(`Contributed repos updated: ${contributed.length}`);
+    } catch (error) {
+        console.error('\nError:', error.message);
+        if (error.errors) {
+            console.error('GraphQL Errors:', JSON.stringify(error.errors, null, 2));
+        }
+        process.exit(1);
+    }
 }
 
-function updatePrivateReposSection(readmeContent, privateRepos) {
-  const startMarker = '<!-- PRIVATE_REPOS_START -->';
-  const endMarker = '<!-- PRIVATE_REPOS_END -->';
-  const listMd = privateRepos
-    .map(name => `- ${name}`)
-    .join('\n');
-  const replacement = `${startMarker}\n${listMd}\n${endMarker}`;
-  const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'm');
-
-  if (!regex.test(readmeContent)) {
-    throw new Error('Private repos section markers not found in README.md');
-  }
-
-  return readmeContent.replace(regex, replacement);
-}
-
-function updateOtherContribsSection(readmeContent, otherContribs) {
-  const startMarker = '<!-- OTHER_CONTRIBS_START -->';
-  const endMarker = '<!-- OTHER_CONTRIBS_END -->';
-  const listMd = otherContribs
-    .map(([nameWithOwner, url]) => `- [${nameWithOwner}](${url})`)
-    .join('\n');
-  const replacement = `${startMarker}\n${listMd}\n${endMarker}`;
-  const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'm');
-
-  if (!regex.test(readmeContent)) {
-    throw new Error('Other contributions section markers not found in README.md');
-  }
-
-  return readmeContent.replace(regex, replacement);
-}
-
-function updateReadme(repos) {
-  const readmePath = join(__dirname, 'README.md');
-  let readmeContent = readFileSync(readmePath, 'utf8');
-
-  try {
-    readmeContent = updatePrivateReposSection(readmeContent, repos.privateRepos);
-    readmeContent = updateOtherContribsSection(readmeContent, repos.otherContribs);
-    writeFileSync(readmePath, readmeContent);
-    console.log('README.md updated successfully');
-  } catch (error) {
-    console.error('Error updating README.md:', error.message);
-    process.exit(1);
-  }
-}
-
-async function main() {
-  try {
-    const repos = await fetchContributedRepos();
-
-    console.log(`Found ${repos.privateRepos.length} private repositories and ${repos.otherContribs.length} other contributions`);
-
-    console.log('\nPrivate repositories:');
-    repos.privateRepos.forEach(name => {
-      console.log(`- ${name}`);
-    });
-
-    console.log('\nOther contributions:');
-    repos.otherContribs.forEach(([nameWithOwner, url]) => {
-      console.log(`- ${nameWithOwner}: ${url}`);
-    });
-
-    updateReadme(repos);
-  } catch (error) {
-    console.error('Error:', error.message);
-    process.exit(1);
-  }
-}
-
-main();
+processRepositories();
