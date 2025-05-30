@@ -27,6 +27,7 @@ jobs:
       - name: Update README with contributed repos
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
+          SKIP_FILE_DEBUG: 1
         run: node update_contribution.js
 
       - name: Commit & push changes if any

@@ -23,6 +23,13 @@ const graphqlWithAuth = async (...args) => {
     })(...args);
 };
 
+function writeDebugFile(filePath, content) {
+    if (!process.env.SKIP_FILE_DEBUG) {
+        fs.mkdirSync('output', { recursive: true });
+        fs.writeFileSync(filePath, SON.stringify(content, null, 2), 'utf-8');
+    }
+}
+
 async function getAllRepositories() {
     const privateOwnedRepos = new Map();
     const publicOwnedRepos = new Map();
@@ -45,7 +52,7 @@ async function getAllRepositories() {
             to: toISO,
         });
 
-        writeFileSync('output/response_repos.json', JSON.stringify(result, null, 2), 'utf-8');
+        writeDebugFile('output/response_repos.json', result);
 
         const coll = result.user.contributionsCollection;
         const arr = [
@@ -106,8 +113,8 @@ async function getLastContributionDate(repoOwner, repoName) {
                 issueCursor
             });
 
-            writeFileSync(`output/response_repo_${repoOwner.toLowerCase()}_${repoName.toLowerCase()}.json`,
-                JSON.stringify(result, null, 2), 'utf-8');
+            writeDebugFile(`output/response_repo_${repoOwner.toLowerCase()}_${repoName.toLowerCase()}.json`,
+                result);
 
             const history = result.repository.defaultBranchRef?.target?.history;
             if (!history) break;
@@ -162,8 +169,8 @@ async function getLastContributionDate(repoOwner, repoName) {
 async function processRepositories() {
     try {
         const { owned, contributed } = await getAllRepositories();
-        writeFileSync('output/owned.json', JSON.stringify(owned, null, 2), 'utf-8');
-        writeFileSync('output/contributed.json', JSON.stringify(contributed, null, 2), 'utf-8');
+        writeDebugFile('output/owned.json', owned);
+        writeDebugFile('output/contributed.json', contributed);
 
         console.log('\nProcessing private owned repositories...');
         const ownedWithDates = await Promise.all(
