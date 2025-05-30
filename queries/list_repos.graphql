@@ -23,6 +23,63 @@ query AllContributions($login: String!, $from: DateTime!, $to: DateTime!) {
           totalCount
         }
       }
+      issueContributions(first: 100) {
+        nodes {
+          issue {
+            repository {
+              nameWithOwner
+              owner {
+                ... on Organization {
+                  login
+                }
+                ... on User {
+                  login
+                }
+              }
+              url
+              isPrivate
+            }
+          }
+        }
+      }
+      pullRequestContributions(first: 100) {
+        nodes {
+          pullRequest {
+            repository {
+              nameWithOwner
+              owner {
+                ... on Organization {
+                  login
+                }
+                ... on User {
+                  login
+                }
+              }
+              url
+              isPrivate
+            }
+          }
+        }
+      }
+      pullRequestReviewContributions(first: 100) {
+        nodes {
+          pullRequest {
+            repository {
+              nameWithOwner
+              owner {
+                ... on Organization {
+                  login
+                }
+                ... on User {
+                  login
+                }
+              }
+              url
+              isPrivate
+            }
+          }
+        }
+      }
       hasActivityInThePast
     }
   }

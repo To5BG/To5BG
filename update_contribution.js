@@ -48,15 +48,26 @@ async function getAllRepositories() {
         writeFileSync('output/response_repos.json', JSON.stringify(result, null, 2), 'utf-8');
 
         const coll = result.user.contributionsCollection;
-        coll.commitContributionsByRepository.forEach(i => {
-            const repo = i.repository;
-            const map =
-                (repo.owner.login == USERNAME && repo.isPrivate) ? privateOwnedRepos :
+        const arr = [
+            coll.commitContributionsByRepository,
+            coll.issueContributions?.nodes
+                .map(n => ({ repository: n.issue.repository })) || [],
+            coll.pullRequestContributions?.nodes
+                .map(n => ({ repository: n.pullRequest.repository })) || [],
+            coll.pullRequestReviewContributions?.nodes
+                .map(n => ({ repository: n.pullRequest.repository })) || []
+        ];
+
+        for (let col of arr) {
+            col.forEach(i => {
+                const repo = i.repository;
+                const map = (repo.owner.login == USERNAME && repo.isPrivate) ? privateOwnedRepos :
                     (repo.owner.login == USERNAME) ? publicOwnedRepos : otherContributedRepos;
 
-            const [prevCount = 0, repoUrl = repo.url] = map.get(repo.nameWithOwner) || [];
-            map.set(repo.nameWithOwner, [prevCount + i.contributions.totalCount, repoUrl]);
-        });
+                const [prevCount = 0, repoUrl = repo.url] = map.get(repo.nameWithOwner) || [];
+                map.set(repo.nameWithOwner, [prevCount + (i?.contributions?.totalCount ?? 1), repoUrl]);
+            });
+        }
 
         if (!coll.hasActivityInThePast) break;
         to = new Date(from);
@@ -66,7 +77,6 @@ async function getAllRepositories() {
         rangesProcessed++;
         process.stdout.write(`\rProcessed ${rangesProcessed} time ranges of repositories...`);
         process.stdout.write(from.toISOString());
-        break;
     }
 
     console.log(`\nFound ${privateOwnedRepos.size} private owned repositories`);
@@ -110,11 +120,11 @@ async function getLastContributionDate(repoOwner, repoName) {
                     dates.push(new Date(o.node.committedDate));
             });
 
-            result.repository.issues.nodes.forEach(node => {
-                if (node.author?.login === USERNAME)
+            result.repository.issues.nodes.forEach(issue => {
+                if (issue.author?.login === USERNAME)
                     dates.push(new Date(issue.createdAt));
 
-                node.comments.nodes.forEach(comment => {
+                issue.comments.nodes.forEach(comment => {
                     if (comment.author?.login === USERNAME)
                         dates.push(new Date(comment.createdAt));
                 });
