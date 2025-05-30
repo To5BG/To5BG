@@ -23,61 +23,58 @@ query AllContributions($login: String!, $from: DateTime!, $to: DateTime!) {
           totalCount
         }
       }
-      issueContributions(first: 100) {
-        nodes {
-          issue {
-            repository {
-              nameWithOwner
-              owner {
-                ... on Organization {
-                  login
-                }
-                ... on User {
-                  login
-                }
-              }
-              url
-              isPrivate
+      issueContributionsByRepository(maxRepositories: 100) {
+        repository {
+          nameWithOwner
+          owner {
+            ... on Organization {
+              login
+            }
+            ... on User {
+              login
             }
           }
+          url
+          isPrivate
+        }
+        contributions(first: 100) {
+          totalCount
         }
       }
-      pullRequestContributions(first: 100) {
-        nodes {
-          pullRequest {
-            repository {
-              nameWithOwner
-              owner {
-                ... on Organization {
-                  login
-                }
-                ... on User {
-                  login
-                }
-              }
-              url
-              isPrivate
+      pullRequestContributionsByRepository(maxRepositories: 100) {
+        repository {
+          nameWithOwner
+          owner {
+            ... on Organization {
+              login
+            }
+            ... on User {
+              login
             }
           }
+          url
+          isPrivate
+        }
+        contributions(first: 100) {
+          totalCount
         }
       }
-      pullRequestReviewContributions(first: 100) {
-        nodes {
-          pullRequest {
-            repository {
-              nameWithOwner
-              owner {
-                ... on Organization {
-                  login
-                }
-                ... on User {
-                  login
-                }
-              }
-              url
-              isPrivate
+      pullRequestReviewContributionsByRepository(maxRepositories: 100) {
+        repository {
+          nameWithOwner
+          owner {
+            ... on Organization {
+              login
+            }
+            ... on User {
+              login
             }
           }
+          url
+          isPrivate
+        }
+        contributions(first: 100) {
+          totalCount
         }
       }
       hasActivityInThePast

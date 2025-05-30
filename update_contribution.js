@@ -50,12 +50,9 @@ async function getAllRepositories() {
         const coll = result.user.contributionsCollection;
         const arr = [
             coll.commitContributionsByRepository,
-            coll.issueContributions?.nodes
-                .map(n => ({ repository: n.issue.repository })) || [],
-            coll.pullRequestContributions?.nodes
-                .map(n => ({ repository: n.pullRequest.repository })) || [],
-            coll.pullRequestReviewContributions?.nodes
-                .map(n => ({ repository: n.pullRequest.repository })) || []
+            coll.issueContributionsByRepository,
+            coll.pullRequestContributionsByRepository,
+            coll.pullRequestReviewContributionsByRepository
         ];
 
         for (let col of arr) {
