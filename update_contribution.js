@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { graphql } from '@octokit/graphql';
 import { fileURLToPath } from 'url';
 import { join } from 'path';
@@ -25,8 +25,8 @@ const graphqlWithAuth = async (...args) => {
 
 function writeDebugFile(filePath, content) {
     if (!process.env.SKIP_FILE_DEBUG) {
-        fs.mkdirSync('output', { recursive: true });
-        fs.writeFileSync(filePath, SON.stringify(content, null, 2), 'utf-8');
+        mkdirSync('output', { recursive: true });
+        writeFileSync(filePath, JSON.stringify(content, null, 2), 'utf-8');
     }
 }
 
@@ -81,6 +81,7 @@ async function getAllRepositories() {
         rangesProcessed++;
         process.stdout.write(`\rProcessed ${rangesProcessed} time ranges of repositories...`);
         process.stdout.write(from.toISOString());
+        // break;
     }
 
     console.log(`\nFound ${privateOwnedRepos.size} private owned repositories`);
@@ -199,12 +200,14 @@ async function processRepositories() {
         );
 
         // Update README
+        const wspace = "\u00A0";
         const readmePath = join(__dirname, 'README.md');
         let readme = readFileSync(readmePath, 'utf8');
 
         const privateSection = ownedWithDates
             .sort((a, b) => b.lastContributionDate - a.lastContributionDate)
-            .map(repo => `- [${repo.count}]${repo.nameWithOwner}`)
+            .map(repo => `- [${repo.count}]${wspace.repeat(7 - 2 * repo.count.toString().length)}` +
+                `${repo.nameWithOwner}`)
             .join('\n');
         readme = readme.replace(
             /<!-- PRIVATE_REPOS_START -->[\s\S]*?<!-- PRIVATE_REPOS_END -->/,
@@ -213,7 +216,8 @@ async function processRepositories() {
 
         const contributedSection = contributedWithDates
             .sort((a, b) => b.lastContributionDate - a.lastContributionDate)
-            .map(repo => `- [${repo.count}][${repo.nameWithOwner}](${repo.url})`)
+            .map(repo => `- [${repo.count}]${wspace.repeat(7 - 2 * repo.count.toString().length)}` +
+                `[${repo.nameWithOwner}](${repo.url})`)
             .join('\n');
         readme = readme.replace(
             /<!-- OTHER_CONTRIBS_START -->[\s\S]*?<!-- OTHER_CONTRIBS_END -->/,
