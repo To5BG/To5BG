@@ -69,7 +69,7 @@ async function getAllRepositories() {
                     (repo.owner.login == USERNAME) ? publicOwnedRepos : otherContributedRepos;
 
                 const [prevCount = 0, repoUrl = repo.url] = map.get(repo.nameWithOwner) || [];
-                map.set(repo.nameWithOwner, [prevCount + (i?.contributions?.totalCount ?? 1), repoUrl]);
+                map.set(repo.nameWithOwner, [prevCount + (i?.contributions?.totalCount ?? 1), repoUrl, repo.isPrivate]);
             });
         }
 
@@ -180,8 +180,7 @@ async function processRepositories() {
                 const [, , , owner, name] = repo[1].split("/");
                 const lastContributionDate = await getLastContributionDate(owner, name);
                 return {
-                    nameWithOwner: `${owner}/${name}`, count: repo[0], url: repo[1],
-                    lastContributionDate
+                    count: repo[0], name, lastContributionDate
                 };
             })
         );
@@ -194,7 +193,7 @@ async function processRepositories() {
                 const lastContributionDate = await getLastContributionDate(owner, name);
                 return {
                     nameWithOwner: `${owner}/${name}`, count: repo[0], url: repo[1],
-                    lastContributionDate
+                    lastContributionDate, isPrivate: repo[2]
                 };
             })
         );
@@ -207,7 +206,7 @@ async function processRepositories() {
         const privateSection = ownedWithDates
             .sort((a, b) => b.lastContributionDate - a.lastContributionDate)
             .map(repo => `- [${repo.count}]${wspace.repeat(7 - 2 * repo.count.toString().length)}` +
-                `${repo.nameWithOwner}`)
+                `${repo.name}`)
             .join('\n');
         readme = readme.replace(
             /<!-- PRIVATE_REPOS_START -->[\s\S]*?<!-- PRIVATE_REPOS_END -->/,
@@ -217,7 +216,7 @@ async function processRepositories() {
         const contributedSection = contributedWithDates
             .sort((a, b) => b.lastContributionDate - a.lastContributionDate)
             .map(repo => `- [${repo.count}]${wspace.repeat(7 - 2 * repo.count.toString().length)}` +
-                `[${repo.nameWithOwner}](${repo.url})`)
+                (repo.isPrivate ? `${repo.nameWithOwner}` : `[${repo.nameWithOwner}](${repo.url})`))
             .join('\n');
         readme = readme.replace(
             /<!-- OTHER_CONTRIBS_START -->[\s\S]*?<!-- OTHER_CONTRIBS_END -->/,
