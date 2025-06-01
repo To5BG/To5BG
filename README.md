@@ -102,7 +102,7 @@ IDEs/Editors:
 - [1]     [ConSol-Lab/Munchkin](https://github.com/ConSol-Lab/Munchkin)
 - [44]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
 - [8]     Ivo-Yordanov/SET
-- [25]   vrullens/MPS_Assignment_1
+- [26]   vrullens/MPS_Assignment_1
 - [56]   stelitop/CS4515-project
 - [13]   Ivo-Yordanov/DME-Assignments
 - [1]     [Herb-AI/HerbSearch.jl](https://github.com/Herb-AI/HerbSearch.jl)
