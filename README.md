@@ -15,7 +15,6 @@ Currently a 1st-year grad student at TUDelft, studying Data Science and Artifici
   <img src="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg" />
 </picture>
 </a>
-</br>
 <a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
   <source
