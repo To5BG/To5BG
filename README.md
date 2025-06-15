@@ -87,15 +87,15 @@ IDEs/Editors:
 ## Private Repositories
 
 <!-- PRIVATE_REPOS_START -->
+- [95]   tudelft-vault
 - [39]   high-performance-analysis-systems
-- [92]   tudelft-vault
 - [122] CS4535-Constraint-Solving
 <!-- PRIVATE_REPOS_END -->
 
 ## Other Repositories I Contributed To
 
 <!-- OTHER_CONTRIBS_START -->
-- [32]   [vdakov/evolutionary-algorithms-circles-g8](https://github.com/vdakov/evolutionary-algorithms-circles-g8)
+- [41]   [vdakov/evolutionary-algorithms-circles-g8](https://github.com/vdakov/evolutionary-algorithms-circles-g8)
 - [22]   fa-fie/geometric-data-processing
 - [26]   FilipDobrev/3D-Visualisations
 - [45]   [vdakov/cv-board-game-detection](https://github.com/vdakov/cv-board-game-detection)
