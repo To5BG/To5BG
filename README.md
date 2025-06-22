@@ -87,8 +87,8 @@ IDEs/Editors:
 ## Private Repositories
 
 <!-- PRIVATE_REPOS_START -->
-- [95]   tudelft-vault
-- [39]   high-performance-analysis-systems
+- [104] tudelft-vault
+- [42]   high-performance-analysis-systems
 - [122] CS4535-Constraint-Solving
 <!-- PRIVATE_REPOS_END -->
 
