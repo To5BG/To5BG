@@ -113,5 +113,5 @@ IDEs/Editors:
 - [2]     kostaGi/CAI_Negotiations
 - [58]   mark200/CSE3300
 - [8]     kostaGi/CAI_project
-- [53]   ViliamVadocz/cse1500-fow-chess
+- [47]   ViliamVadocz/cse1500-fow-chess
 <!-- OTHER_CONTRIBS_END -->
