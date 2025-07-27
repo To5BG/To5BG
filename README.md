@@ -100,7 +100,7 @@ IDEs/Editors:
 - [26]   FilipDobrev/3D-Visualisations
 - [45]   [vdakov/cv-board-game-detection](https://github.com/vdakov/cv-board-game-detection)
 - [1]     [ConSol-Lab/Munchkin](https://github.com/ConSol-Lab/Munchkin)
-- [47]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
+- [44]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
 - [8]     Ivo-Yordanov/SET
 - [25]   vrullens/MPS_Assignment_1
 - [54]   stelitop/CS4515-project
