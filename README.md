@@ -89,7 +89,7 @@ IDEs/Editors:
 <!-- PRIVATE_REPOS_START -->
 - [97]   tudelft-vault
 - [42]   high-performance-analysis-systems
-- [122] CS4535-Constraint-Solving
+- [130] CS4535-Constraint-Solving
 <!-- PRIVATE_REPOS_END -->
 
 ## Other Repositories I Contributed To
@@ -99,7 +99,7 @@ IDEs/Editors:
 - [22]   fa-fie/geometric-data-processing
 - [26]   FilipDobrev/3D-Visualisations
 - [45]   [vdakov/cv-board-game-detection](https://github.com/vdakov/cv-board-game-detection)
-- [1]     [ConSol-Lab/Munchkin](https://github.com/ConSol-Lab/Munchkin)
+- [2]     [ConSol-Lab/Munchkin](https://github.com/ConSol-Lab/Munchkin)
 - [44]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
 - [8]     Ivo-Yordanov/SET
 - [25]   vrullens/MPS_Assignment_1
@@ -112,6 +112,6 @@ IDEs/Editors:
 - [6]     [CSE3000-research-project/cse3000-research-project.github.io](https://github.com/CSE3000-research-project/cse3000-research-project.github.io)
 - [2]     kostaGi/CAI_Negotiations
 - [58]   mark200/CSE3300
-- [8]     kostaGi/CAI_project
 - [47]   ViliamVadocz/cse1500-fow-chess
+- [8]     kostaGi/CAI_project
 <!-- OTHER_CONTRIBS_END -->
