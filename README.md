@@ -89,7 +89,7 @@ IDEs/Editors:
 <!-- PRIVATE_REPOS_START -->
 - [97]   tudelft-vault
 - [42]   high-performance-analysis-systems
-- [126] CS4535-Constraint-Solving
+- [122] CS4535-Constraint-Solving
 <!-- PRIVATE_REPOS_END -->
 
 ## Other Repositories I Contributed To
@@ -111,7 +111,7 @@ IDEs/Editors:
 - [1]     [Herb-AI/HerbGrammar.jl](https://github.com/Herb-AI/HerbGrammar.jl)
 - [6]     [CSE3000-research-project/cse3000-research-project.github.io](https://github.com/CSE3000-research-project/cse3000-research-project.github.io)
 - [2]     kostaGi/CAI_Negotiations
-- [58]   mark200/CSE3300
+- [62]   mark200/CSE3300
 - [8]     kostaGi/CAI_project
 - [47]   ViliamVadocz/cse1500-fow-chess
 <!-- OTHER_CONTRIBS_END -->
