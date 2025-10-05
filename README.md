@@ -97,7 +97,7 @@ IDEs/Editors:
 <!-- OTHER_CONTRIBS_START -->
 - [41]   [vdakov/evolutionary-algorithms-circles-g8](https://github.com/vdakov/evolutionary-algorithms-circles-g8)
 - [22]   fa-fie/geometric-data-processing
-- [27]   FilipDobrev/3D-Visualisations
+- [26]   FilipDobrev/3D-Visualisations
 - [45]   [vdakov/cv-board-game-detection](https://github.com/vdakov/cv-board-game-detection)
 - [1]     [ConSol-Lab/Munchkin](https://github.com/ConSol-Lab/Munchkin)
 - [44]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
