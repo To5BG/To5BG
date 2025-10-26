@@ -103,7 +103,7 @@ IDEs/Editors:
 - [44]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
 - [8]     Ivo-Yordanov/SET
 - [25]   vrullens/MPS_Assignment_1
-- [54]   stelitop/CS4515-project
+- [58]   stelitop/CS4515-project
 - [13]   Ivo-Yordanov/DME-Assignments
 - [1]     [Herb-AI/HerbSearch.jl](https://github.com/Herb-AI/HerbSearch.jl)
 - [1]     [Herb-AI/HerbConstraints.jl](https://github.com/Herb-AI/HerbConstraints.jl)
