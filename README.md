@@ -87,8 +87,8 @@ IDEs/Editors:
 ## Private Repositories
 
 <!-- PRIVATE_REPOS_START -->
-- [97]   tudelft-vault
-- [44]   high-performance-analysis-systems
+- [99]   tudelft-vault
+- [42]   high-performance-analysis-systems
 - [122] CS4535-Constraint-Solving
 <!-- PRIVATE_REPOS_END -->
 
@@ -96,14 +96,14 @@ IDEs/Editors:
 
 <!-- OTHER_CONTRIBS_START -->
 - [41]   [vdakov/evolutionary-algorithms-circles-g8](https://github.com/vdakov/evolutionary-algorithms-circles-g8)
-- [22]   fa-fie/geometric-data-processing
+- [24]   fa-fie/geometric-data-processing
 - [26]   FilipDobrev/3D-Visualisations
 - [45]   [vdakov/cv-board-game-detection](https://github.com/vdakov/cv-board-game-detection)
 - [1]     [ConSol-Lab/Munchkin](https://github.com/ConSol-Lab/Munchkin)
 - [44]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
 - [8]     Ivo-Yordanov/SET
 - [25]   vrullens/MPS_Assignment_1
-- [56]   stelitop/CS4515-project
+- [59]   stelitop/CS4515-project
 - [13]   Ivo-Yordanov/DME-Assignments
 - [1]     [Herb-AI/HerbSearch.jl](https://github.com/Herb-AI/HerbSearch.jl)
 - [1]     [Herb-AI/HerbConstraints.jl](https://github.com/Herb-AI/HerbConstraints.jl)
