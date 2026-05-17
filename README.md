@@ -47,6 +47,7 @@ Currently a 2nd-year grad student at TUDelft, studying Data Science and Artifici
 
 Other languages:
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/julia/julia-original.svg" title="Julia" alt="Julia" width="30" height="30"/></code>&nbsp;
+  <code><img src="https://github.com/devicons/devicon/blob/master/icons/go/go-original-wordmark.svg" title="Go" alt="Go" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/csharp/csharp-original.svg" title="C#" alt="C#" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/visualbasic/visualbasic-original.svg" title="VB" alt="VB" width="30" height="30"/></code>&nbsp;
   <code><img src="https://github.com/devicons/devicon/blob/master/icons/haskell/haskell-original.svg" title="Haskell" alt="Haskell" width="30" height="30"/></code>&nbsp;
