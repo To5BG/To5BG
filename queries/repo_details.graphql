@@ -16,7 +16,6 @@ query RecentContributions(
             }
             edges {
               node {
-                commitUrl
                 committedDate
                 author {
                   user {
@@ -43,14 +42,6 @@ query RecentContributions(
         author {
           login
         }
-        comments(last: 10) {
-          nodes {
-            author {
-              login
-            }
-            createdAt
-          }
-        }
         reviews(last: 10) {
           nodes {
             author {
@@ -74,14 +65,6 @@ query RecentContributions(
         createdAt
         author {
           login
-        }
-        comments(last: 10) {
-          nodes {
-            author {
-              login
-            }
-            createdAt
-          }
         }
       }
     }

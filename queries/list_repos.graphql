@@ -1,83 +1,78 @@
 query AllContributions($login: String!, $from: DateTime!, $to: DateTime!) {
   user(login: $login) {
     contributionsCollection(from: $from, to: $to) {
-      startedAt
-      endedAt
-      totalCommitContributions
-      totalRepositoriesWithContributedCommits
+      restrictedContributionsCount
       commitContributionsByRepository(maxRepositories: 100) {
         repository {
+          name
           nameWithOwner
           owner {
-            ... on Organization {
-              login
-            }
-            ... on User {
-              login
-            }
+            login
           }
           url
           isPrivate
         }
         contributions(first: 100) {
           totalCount
+          nodes {
+            occurredAt
+            ... on CreatedCommitContribution {
+              commitCount
+            }
+          }
         }
       }
       issueContributionsByRepository(maxRepositories: 100) {
         repository {
+          name
           nameWithOwner
           owner {
-            ... on Organization {
-              login
-            }
-            ... on User {
-              login
-            }
+            login
           }
           url
           isPrivate
         }
         contributions(first: 100) {
           totalCount
+          nodes {
+            occurredAt
+          }
         }
       }
       pullRequestContributionsByRepository(maxRepositories: 100) {
         repository {
+          name
           nameWithOwner
           owner {
-            ... on Organization {
-              login
-            }
-            ... on User {
-              login
-            }
+            login
           }
           url
           isPrivate
         }
         contributions(first: 100) {
           totalCount
+          nodes {
+            occurredAt
+          }
         }
       }
       pullRequestReviewContributionsByRepository(maxRepositories: 100) {
         repository {
+          name
           nameWithOwner
           owner {
-            ... on Organization {
-              login
-            }
-            ... on User {
-              login
-            }
+            login
           }
           url
           isPrivate
         }
         contributions(first: 100) {
           totalCount
+          nodes {
+            occurredAt
+          }
         }
       }
-      hasActivityInThePast
     }
   }
 }

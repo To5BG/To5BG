@@ -1,0 +1,25 @@
+query AccessiblePrivateRepositories($cursor: String) {
+  viewer {
+    repositories(
+      first: 100
+      after: $cursor
+      affiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER]
+      privacy: PRIVATE
+      orderBy: { field: UPDATED_AT, direction: DESC }
+    ) {
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        name
+        nameWithOwner
+        owner {
+          login
+        }
+        url
+        isPrivate
+      }
+    }
+  }
+}
