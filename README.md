@@ -1,6 +1,6 @@
 ## Howdy 👋
 
-Currently a 1st-year grad student at TUDelft, studying Data Science and Artificial Intelligence.
+Currently a 2nd-year grad student at TUDelft, studying Data Science and Artificial Intelligence. Master Thesis on Generalizing & Minimizing Conflicts in Program Synthesis
 
 <a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
