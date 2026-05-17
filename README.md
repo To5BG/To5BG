@@ -5,27 +5,27 @@ Currently a 1st-year grad student at TUDelft, studying Data Science and Artifici
 <a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
   <source
-    srcset="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=dark"
+    srcset="https://github-stats-extended.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=dark"
     media="(prefers-color-scheme: dark)"
   />
   <source
-    srcset="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=graywhite"
+    srcset="https://github-stats-extended.vercel.app/api/wakatime?username=to_5bg&custom_title=My+most+recent+activity+%28last+7+days%29&theme=graywhite"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img src="https://github-readme-stats.vercel.app/api/wakatime?username=to_5bg" />
+  <img src="https://github-stats-extended.vercel.app/api/wakatime?username=to_5bg" />
 </picture>
 </a>
 <a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
   <source
-    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&icon_color=ffffff&hide_rank=true&custom_title=Github+Stats&theme=dark"
+    srcset="https://github-stats-extended.vercel.app/api?username=to5bg&show_icons=true&icon_color=ffffff&hide_rank=true&custom_title=Github+Stats&theme=dark"
     media="(prefers-color-scheme: dark)"
   />
   <source
-    srcset="https://github-readme-stats.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&custom_title=Github+Stats&theme=graywhite"
+    srcset="https://github-stats-extended.vercel.app/api?username=to5bg&show_icons=true&hide_rank=true&custom_title=Github+Stats&theme=graywhite"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img src="https://github-readme-stats.vercel.app/api?username=to5bg" />
+  <img src="https://github-stats-extended.vercel.app/api?username=to5bg" />
 </picture>
 </a>
 
@@ -34,14 +34,14 @@ Currently a 1st-year grad student at TUDelft, studying Data Science and Artifici
 <a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
   <source
-    srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=14&layout=compact&card_width=400&theme=dark"
+    srcset="https://github-stats-extended.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=14&layout=compact&card_width=400&theme=dark"
     media="(prefers-color-scheme: dark)"
   />
   <source
-    srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=14&layout=compact&card_width=400&theme=graywhite"
+    srcset="https://github-stats-extended.vercel.app/api/top-langs/?username=to5bg&size_weight=0.2&count_weight=0.8&langs_count=14&layout=compact&card_width=400&theme=graywhite"
     media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)"
   />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=to5bg" />
+  <img src="https://github-stats-extended.vercel.app/api/top-langs/?username=to5bg" />
 </picture>
 </a>
 
