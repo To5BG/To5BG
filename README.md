@@ -87,19 +87,22 @@ IDEs/Editors:
 ## Private Repositories
 
 <!-- PRIVATE_REPOS_START -->
+- [100] idleon_helper
 - [97]   tudelft-vault
 - [42]   high-performance-analysis-systems
-- [122] CS4535-Constraint-Solving
+- [125] CS4535-Constraint-Solving
 <!-- PRIVATE_REPOS_END -->
 
 ## Other Repositories I Contributed To
 
 <!-- OTHER_CONTRIBS_START -->
+- [28]   Herb-AI/ConflictAnalysisExperiments.jl
+- [13]   Herb-AI/ConflictAnalysis.jl
+- [11]   [Herb-AI/RefactoringExperiments.jl](https://github.com/Herb-AI/RefactoringExperiments.jl)
 - [41]   [vdakov/evolutionary-algorithms-circles-g8](https://github.com/vdakov/evolutionary-algorithms-circles-g8)
 - [22]   fa-fie/geometric-data-processing
 - [26]   FilipDobrev/3D-Visualisations
 - [45]   [vdakov/cv-board-game-detection](https://github.com/vdakov/cv-board-game-detection)
-- [1]     [ConSol-Lab/Munchkin](https://github.com/ConSol-Lab/Munchkin)
 - [44]   [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes)
 - [8]     Ivo-Yordanov/SET
 - [25]   vrullens/MPS_Assignment_1
@@ -109,7 +112,7 @@ IDEs/Editors:
 - [1]     [Herb-AI/HerbConstraints.jl](https://github.com/Herb-AI/HerbConstraints.jl)
 - [1]     [Herb-AI/Garden.jl](https://github.com/Herb-AI/Garden.jl)
 - [1]     [Herb-AI/HerbGrammar.jl](https://github.com/Herb-AI/HerbGrammar.jl)
-- [6]     [CSE3000-research-project/cse3000-research-project.github.io](https://github.com/CSE3000-research-project/cse3000-research-project.github.io)
+- [2]     [CSE3000-research-project/cse3000-research-project.github.io](https://github.com/CSE3000-research-project/cse3000-research-project.github.io)
 - [2]     kostaGi/CAI_Negotiations
 - [58]   mark200/CSE3300
 - [8]     kostaGi/CAI_project
