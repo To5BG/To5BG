@@ -97,7 +97,7 @@ IDEs/Editors:
 ## Other Repositories I Contributed To
 
 <!-- OTHER_CONTRIBS_START -->
-- [18]   Herb-AI/ConflictAnalysis.jl
+- [19]   Herb-AI/ConflictAnalysis.jl
 - [38]   Herb-AI/ConflictAnalysisExperiments.jl
 - [11]   [Herb-AI/RefactoringExperiments.jl](https://github.com/Herb-AI/RefactoringExperiments.jl)
 - [41]   [vdakov/evolutionary-algorithms-circles-g8](https://github.com/vdakov/evolutionary-algorithms-circles-g8)
