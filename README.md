@@ -113,7 +113,7 @@ IDEs/Editors:
 - [1]     [Herb-AI/HerbConstraints.jl](https://github.com/Herb-AI/HerbConstraints.jl)
 - [1]     [Herb-AI/Garden.jl](https://github.com/Herb-AI/Garden.jl)
 - [1]     [Herb-AI/HerbGrammar.jl](https://github.com/Herb-AI/HerbGrammar.jl)
-- [2]     [CSE3000-research-project/cse3000-research-project.github.io](https://github.com/CSE3000-research-project/cse3000-research-project.github.io)
+- [3]     [CSE3000-research-project/cse3000-research-project.github.io](https://github.com/CSE3000-research-project/cse3000-research-project.github.io)
 - [2]     kostaGi/CAI_Negotiations
 - [58]   mark200/CSE3300
 - [8]     kostaGi/CAI_project
