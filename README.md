@@ -1,6 +1,6 @@
 ## Howdy 👋
 
-Currently a 2nd-year grad student at TUDelft, studying Data Science and Artificial Intelligence. Master Thesis on *Generalizing & Minimizing Conflicts in Program Synthesis*.
+SWE @Uber. Graduated from TU Delft, Data Science and Artificial Intelligence. Theses on program synthesis.
 
 <a href="https://github.com/anuraghazra/github-readme-stats">
 <picture>
